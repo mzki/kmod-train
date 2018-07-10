@@ -31,73 +31,69 @@ enum { BUF_SIZE = 100 };
 static char print_info_stub_buffer[BUF_SIZE] = {0};
 
 static int print_info_stub(const char *fmt, ...) {
-  const int fmt_len  = strlen(fmt);
-  const int used_len = fmt_len < BUF_SIZE ? fmt_len : BUF_SIZE;
+        const int fmt_len  = strlen(fmt);
+        const int used_len = fmt_len < BUF_SIZE ? fmt_len : BUF_SIZE;
 
-  strncpy(print_info_stub_buffer, fmt, used_len);
-  return used_len;
+        strncpy(print_info_stub_buffer, fmt, used_len);
+        return used_len;
 }
 
 // 
 // setup/teardown for each unit test
 //
 static void setup(void) {
-  g_print_info = print_info_stub; // set stub function to spy its content
-  print_info_stub_buffer[0] = '\0';
+        g_print_info = print_info_stub; // set stub function to spy its content
+        print_info_stub_buffer[0] = '\0';
 }
 
 static void teardown(void) {
-  // do nothing
+        // do nothing
 }
 
 //
 // init/exit
 //
 static int __init utest_mod_init(void) {
-  int ret;
+        int ret;
 
-  {
-    const char const *test_name      = "mod_init";
-    const char const *expect_msg     = "%s installed\n";
-    const int         expect_msg_len = strlen(expect_msg);
+        setup();
+        {
+                const char const *test_name      = "mod_init";
+                const char const *expect_msg     = "%s installed\n";
+                const int         expect_msg_len = strlen(expect_msg);
 
-    setup();
+                ret = mod_init();
+                if (ret != 0) {
+                        printk("Fail: %s: returns non-zero: %d\n", test_name, ret);
+                        return -1;
+                }
 
-    ret = mod_init();
-    if (ret != 0) {
-      printk("Fail: %s: returns non-zero: %d\n", test_name, ret);
-      return -1;
-    }
+                if (strncmp(print_info_stub_buffer, expect_msg, expect_msg_len) != 0) {
+                        printk("Fail: %s: expect msg %s, got %s\n", 
+                                test_name, expect_msg, print_info_stub_buffer);
+                        return -1;
+                }
+        }
+        teardown();
 
-    if (strncmp(print_info_stub_buffer, expect_msg, expect_msg_len) != 0) {
-      printk("Fail: %s: expect msg %s, got %s\n", test_name, expect_msg, print_info_stub_buffer);
-      return -1;
-    }
+        setup();
+        {
+                const char const *test_name      = "mod_exit";
+                const char const *expect_msg     = "%s uninstalled\n";
+                const int         expect_msg_len = strlen(expect_msg);
 
-    teardown();
-  }
+                mod_exit();
+                if (strncmp(print_info_stub_buffer, expect_msg, expect_msg_len) != 0) {
+                        printk("Fail: %s: expect msg %s, got %s\n", 
+                                test_name, expect_msg, print_info_stub_buffer);
+                        return -1;
+                }
+        }
+        teardown();
 
-  {
-    const char const *test_name      = "mod_exit";
-    const char const *expect_msg     = "%s uninstalled\n";
-    const int         expect_msg_len = strlen(expect_msg);
-
-    setup();
-
-    mod_exit();
-    if (strncmp(print_info_stub_buffer, expect_msg, expect_msg_len) != 0) {
-      printk("Fail: %s: expect msg %s, got %s\n", test_name, expect_msg, print_info_stub_buffer);
-      return -1;
-    }
-
-    teardown();
-  }
-
-  printk("%s: PASS\n", MOD_NAME);
-  return 0; // OK 
+        printk("%s: PASS\n", MOD_NAME);
+        return 0; // OK 
 }
 
 static void __exit utest_mod_exit(void) {
 }
-
-
