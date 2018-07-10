@@ -2,7 +2,7 @@ KERNEL_TOP ?= /lib/modules/$(shell uname -r)/build
 
 OBJ_NAME := independent_mod_test
 
-obj-m += $(OBJ_NAME).o
+obj-m := $(OBJ_NAME).o
 
 ccflags-y += -I../
 
@@ -14,7 +14,7 @@ RESET_TEXT=\033[0m
 all: modules
 
 modules: 
-	make -C $(KERNEL_TOP) M=$(PWD) modules
+	make -C $(KERNEL_TOP) M=$(CURDIR) modules
 
 install:
 	sudo insmod $(OBJ_NAME).ko
@@ -33,4 +33,4 @@ test: modules
 	@echo "$(BOLD_TEXT)$(OBJ_NAME): $(OK_TEXT)PASS$(RESET_TEXT)"
 
 clean:
-	make -C $(KERNEL_TOP) M=$(PWD) clean
+	make -C $(KERNEL_TOP) M=$(CURDIR) clean

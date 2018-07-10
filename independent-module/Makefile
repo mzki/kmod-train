@@ -5,10 +5,10 @@ obj-m += independent_mod.o
 all: modules
 
 modules: 
-	make -C $(KERNEL_TOP) M=$(PWD) modules
+	make -C $(KERNEL_TOP) M=$(CURDIR) modules
 
 test: 
-	make -C $(PWD)/testing M=$(PWD)/testing test
+	make -C $(CURDIR)/testing M=$(CURDIR)/testing test
 
 clean:
-	make -C $(KERNEL_TOP) M=$(PWD) clean
+	make -C $(KERNEL_TOP) M=$(CURDIR) clean
