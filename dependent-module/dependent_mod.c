@@ -11,12 +11,12 @@ MODULE_VERSION("0.0.1");
 
 static const char * const MOD_NAME = "dependent module";
 
-static const unsigned long TICK_MSEC = 1000; // 1sec
+#define TICK_MSEC (unsigned long)1000 // 1sec
+
+#define ODD_TICK_MSEC  (unsigned long)(TICK_MSEC / 2)
+#define EVEN_TICK_MSEC (unsigned long)((double)TICK_MSEC * 1.5)
 
 static void tick_handler(unsigned long data) {
-        static const unsigned long ODD_TICK_MSEC  = (unsigned long)(TICK_MSEC / 2);
-        static const unsigned long EVEN_TICK_MSEC = (unsigned long)((double)TICK_MSEC * 1.5);
-
         static uint64_t tick_count = 0;
 
         unsigned long reset_msec = (tick_count & 0x1) == 1 ? ODD_TICK_MSEC : EVEN_TICK_MSEC;

@@ -35,4 +35,5 @@ test:
 
 clean:
 	make -C $(DEP_DIR) clean
+	make -C $(PWD)/testing clean
 	make -C $(KERNEL_TOP) M=$(PWD) clean
